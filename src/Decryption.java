@@ -19,8 +19,10 @@ import org.omg.CORBA.FREE_MEM;
 
 public class Decryption {
 
-	static int diagramMatrix[][]=new int[26][26];
+	static double diagramMatrix[][]=new double[26][26];
+	
 	HashMap<String,Double > letterFrequency=new HashMap<String, Double>();
+	HashMap<String,Double> diagramFrequency=new HashMap<String, Double>();
 	static String[] descFreqLetter=new String[26];
 	HashMap<String, Integer>frequecyCount=new HashMap<String, Integer>();
 	static String testCipher="RIHILKHIERSKILEKKLKTRSKHRIHILKHLREIRTRSKLKTRSKHHLEKRS";
@@ -39,6 +41,17 @@ public class Decryption {
 			//System.out.print(descFreqLetter[i]);
 			i++;
 		}
+		
+		file=new BufferedReader(new FileReader("trigram.txt"));
+		//Adding all standard english letter frequency in hashmap
+		i=0;
+		for (String line = file.readLine(); line != null; line = file.readLine()) 
+		{	
+			tempLine=line.split(" ");
+			diagramFrequency.put(tempLine[0], Double.parseDouble(tempLine[1]));
+			i++;
+		}
+		
 		
 	}
 
@@ -70,21 +83,65 @@ public class Decryption {
 	    	newPlainTxt+=descFreqLetter[sortedCipher.indexOf(testCipher.charAt(i))];
 		}
 	    System.out.println(newPlainTxt);
-	    
+	    double diagramTotalFreq=0;
 	    for (int i = 0; i < descFreqLetter.length; i++) {
 			for (int j = 0; j < descFreqLetter.length; j++) {
 				String subString=descFreqLetter[i]+descFreqLetter[j];
-				diagramMatrix[i][j]=d.getSubstringCount(newPlainTxt,subString);
+				diagramTotalFreq+=d.getSubstringCount(newPlainTxt,subString);
+			}
+		}
+	    
+	    System.out.println(diagramTotalFreq);
+	    for (int i = 0; i < descFreqLetter.length; i++) {
+			for (int j = 0; j < descFreqLetter.length; j++) {
+				String subString=descFreqLetter[i]+descFreqLetter[j];
+				diagramMatrix[i][j]=(d.getSubstringCount(newPlainTxt,subString)/diagramTotalFreq)*100;
 				System.out.print(subString+"="+diagramMatrix[i][j]+"\t");
 			}
 			System.out.println();
 		}
+	    
+	    //calculate score
+	    double score=0;
+	    for (int i = 0; i < descFreqLetter.length; i++) {
+			for (int j = 0; j < descFreqLetter.length; j++) {
+				String subString=descFreqLetter[i]+descFreqLetter[j];
+				if(d.diagramFrequency.containsKey(subString)){
+					score+=d.diagramFrequency.get(subString)+diagramMatrix[i][j];
+				}
+				else
+					score+=diagramMatrix[i][j];
+				
+			}
+			System.out.println();
+		}
+	    
+	    double currentScore=d.calculateScore();
+	    calculateScore()>intial);
 	    
 	    
 	    
 	   
 	    
 		
+	}
+	
+	
+	public double calculateScore()
+	{
+		double score=0;
+		for (int i = 0; i < descFreqLetter.length; i++) {
+			for (int j = 0; j < descFreqLetter.length; j++) {
+				String subString=descFreqLetter[i]+descFreqLetter[j];
+				if(diagramFrequency.containsKey(subString)){
+					score+=diagramFrequency.get(subString)+diagramMatrix[i][j];
+				}
+				else
+					score+=diagramMatrix[i][j];
+				
+			}
+		}
+		return score;
 	}
 	public int getSubstringCount(String str,String findStr){
 		int lastIndex = 0;
