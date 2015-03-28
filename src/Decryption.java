@@ -116,10 +116,22 @@ public class Decryption {
 			System.out.println();
 		}
 	    
-	    double currentScore=d.calculateScore();
-	    calculateScore()>intial);
+	    double currentScore=0,previousScore=0;;
+	    
+	    do{
+	    	
+	    	
+	    	
+	    	
+	    	
+	    	currentScore=d.calculateScore();
+	    	if(currentScore>=previousScore)
+	    		previousScore=currentScore;
+	    	
+	    }while(currentScore>=previousScore);
 	    
 	    
+	     
 	    
 	   
 	    
